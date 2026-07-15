@@ -1,0 +1,40 @@
+SEED = 42
+
+BATCH_SIZE = 8
+
+NUM_WORKERS = 2
+
+LEARNING_RATE = 1e-5
+
+EPOCHS = 30
+
+PATIENCE = 4
+
+MIN_DELTA = 0.01
+
+MODEL_NAME = "PekingU/rtdetr_r50vd"
+
+TRAIN_RATIO = 0.70
+
+VAL_RATIO = 0.15
+
+TEST_RATIO = 0.15
+
+SEED = 42
+
+BATCH_SIZE = 8
+NUM_WORKERS = 2
+
+LEARNING_RATE = 1e-5
+
+EPOCHS = 30
+
+PATIENCE = 4
+
+MODEL_NAME = "PekingU/rtdetr_r50vd"
+
+DATASET_ROOT = "./VOC"
+
+CHECKPOINT_PATH = "./checkpoints/best_model.pth"
+
+OUTPUT_DIR = "./outputs"
