@@ -24,22 +24,18 @@ from data.classes import (
 
 class Predictor:
 
-    def __init__(self):
+    def __init__(
+        self,
+        processor,
+        model,
+        device
+    ):
 
-        self.processor,\
-        self.model,\
-        self.device = load_model()
+        self.processor = processor
 
-        optimizer = torch.optim.AdamW(
-            self.model.parameters(),
-            lr=1e-5
-        )
+        self.model = model
 
-        load_model_weights(
-            self.model,
-            CHECKPOINT_PATH,
-            self.device
-        )
+        self.device = device
 
         self.model.eval()
         
