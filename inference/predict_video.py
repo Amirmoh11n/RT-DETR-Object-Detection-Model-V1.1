@@ -28,11 +28,15 @@ class VideoPredictor:
         self.model,\
         self.device = load_model()
 
-        load_model_weights(
-            self.model,
-            CHECKPOINT_PATH,
-            self.device
-        )
+        # Load fine-tuned weights if available
+        import os
+
+        if CHECKPOINT_PATH and os.path.exists(CHECKPOINT_PATH):
+            load_model_weights(
+                self.model,
+                CHECKPOINT_PATH,
+                self.device
+            )
 
         self.model.eval()
 

@@ -64,11 +64,15 @@ def load_model():
 
 
     # Load fine-tuned weights
-    load_model_weights(
-        model,
-        CHECKPOINT_PATH,
-        device
-    )
+    # Load fine-tuned weights if available
+    import os
+
+    if CHECKPOINT_PATH and os.path.exists(CHECKPOINT_PATH):
+        load_model_weights(
+            model,
+            CHECKPOINT_PATH,
+            device
+        )
 
 
     model.eval()

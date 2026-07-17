@@ -14,9 +14,6 @@ from models.rtdetr_model import (
     load_model
 )
 
-from training.checkpoint import (
-    load_model_weights
-)
 
 from data.classes import (
     ID_TO_CLASS
@@ -24,12 +21,11 @@ from data.classes import (
 
 class Predictor:
 
-    def __init__(
-        self,
-        processor,
-        model,
-        device
-    ):
+    def __init__(self, processor=None, model=None, device=None):
+
+        # If no components provided, load them from the model loader
+        if processor is None or model is None or device is None:
+            processor, model, device = load_model()
 
         self.processor = processor
 
