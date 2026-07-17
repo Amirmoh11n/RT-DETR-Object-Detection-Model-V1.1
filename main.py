@@ -150,10 +150,8 @@ def main():
                 "Best model saved."
             )
 
-        # `evaluate_map` returns a dict (e.g. {'map': ..., 'map_50': ..., ...})
-        # access the mAP@50 value from the dict and convert to scalar
         if early_stopping(
-            val_metrics["map_50"].item()
+            val_metrics.map50
         ):
 
             print(
