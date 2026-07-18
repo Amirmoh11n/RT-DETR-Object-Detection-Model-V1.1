@@ -29,7 +29,7 @@ LEARNING_RATE = 1e-5
 
 EPOCHS = 30
 
-PATIENCE = 4
+PATIENCE = 10
 
 MODEL_NAME = "PekingU/rtdetr_r50vd"
 

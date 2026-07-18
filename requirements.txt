@@ -1,0 +1,12 @@
+torch
+torchvision
+transformers
+opencv-python
+pillow
+numpy
+matplotlib
+tqdm
+pyyaml
+pytest
+accelerate
+safetensors

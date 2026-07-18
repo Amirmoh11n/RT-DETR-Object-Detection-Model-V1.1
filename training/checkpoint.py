@@ -1,3 +1,4 @@
+import os
 import torch
 
 def save_checkpoint(
@@ -7,6 +8,11 @@ def save_checkpoint(
     val_loss,
     path
 ):
+
+    # Ensure directory exists
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
 
     torch.save(
         {
@@ -25,6 +31,9 @@ def load_checkpoint(
     path,
     device
 ):
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Checkpoint not found: {path}")
 
     checkpoint = torch.load(
         path,
