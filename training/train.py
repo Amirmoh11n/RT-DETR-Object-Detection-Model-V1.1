@@ -3,11 +3,19 @@ import torch
 from tqdm import tqdm
 
 
-def train_one_epoch(model,train_loader,optimizer,device,scaler):
+def train_one_epoch(
+    model,
+    train_loader,
+    optimizer,
+    device,
+    scaler
+):
 
     model.train()
 
     running_loss = 0.0
+
+    valid_batches = 0
 
     progress_bar = tqdm(
         train_loader,
@@ -31,7 +39,9 @@ def train_one_epoch(model,train_loader,optimizer,device,scaler):
 
         optimizer.zero_grad()
 
-        with torch.cuda.amp.autocast():
+        with torch.cuda.amp.autocast(
+            enabled=device.type == "cuda"
+        ):
 
             outputs = model(
                 pixel_values=pixel_values,
@@ -40,13 +50,30 @@ def train_one_epoch(model,train_loader,optimizer,device,scaler):
 
             loss = outputs.loss
 
+        if not torch.isfinite(loss):
+
+            print(
+                f"Invalid loss detected: {loss}"
+            )
+
+            continue
+
         scaler.scale(loss).backward()
+
+        scaler.unscale_(optimizer)
+
+        torch.nn.utils.clip_grad_norm_(
+            model.parameters(),
+            max_norm=1.0
+        )
 
         scaler.step(optimizer)
 
-        scaler.update()
+        scaler.update()     
 
         running_loss += loss.item()
+
+        valid_batches += 1
 
         progress_bar.set_postfix(
             loss=f"{loss.item():.4f}"
@@ -55,7 +82,9 @@ def train_one_epoch(model,train_loader,optimizer,device,scaler):
     epoch_loss = (
         running_loss
         /
-        len(train_loader)
+        max(valid_batches, 1)
     )
 
-    return epoch_loss
+    return {
+        "loss": epoch_loss
+    }

@@ -4,11 +4,17 @@ from tqdm import tqdm
 
 
 @torch.no_grad()
-def validate(model,val_loader,device):
+def validate(
+    model,
+    val_loader,
+    device
+):
 
     model.eval()
 
     running_loss = 0.0
+
+    valid_batches = 0
 
     progress_bar = tqdm(
         val_loader,
@@ -37,7 +43,17 @@ def validate(model,val_loader,device):
 
         loss = outputs.loss
 
+        if not torch.isfinite(loss):
+
+            print(
+                f"Invalid validation loss detected: {loss}"
+            )
+
+            continue
+
         running_loss += loss.item()
+
+        valid_batches += 1
 
         progress_bar.set_postfix(
             loss=f"{loss.item():.4f}"
@@ -46,7 +62,9 @@ def validate(model,val_loader,device):
     val_loss = (
         running_loss
         /
-        len(val_loader)
+        max(valid_batches, 1)
     )
 
-    return val_loss
+    return {
+        "loss": val_loss
+    }

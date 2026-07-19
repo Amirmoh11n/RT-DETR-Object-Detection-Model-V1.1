@@ -22,18 +22,14 @@ from data.classes import (
     ID_TO_CLASS
 )
 
+
 class Predictor:
 
     def __init__(self):
 
-        self.processor,\
-        self.model,\
+        self.processor, \
+        self.model, \
         self.device = load_model()
-
-        optimizer = torch.optim.AdamW(
-            self.model.parameters(),
-            lr=1e-5
-        )
 
         load_model_weights(
             self.model,
@@ -42,13 +38,19 @@ class Predictor:
         )
 
         self.model.eval()
-        
+
     @torch.no_grad()
     def predict(
         self,
         image_path,
         threshold=0.5
     ):
+
+        if not os.path.exists(image_path):
+
+            raise FileNotFoundError(
+                f"Image not found: {image_path}"
+            )
 
         image = Image.open(
             image_path
@@ -60,8 +62,8 @@ class Predictor:
         )
 
         inputs = {
-            k: v.to(self.device)
-            for k, v in inputs.items()
+            key: value.to(self.device)
+            for key, value in inputs.items()
         }
 
         outputs = self.model(
@@ -69,8 +71,9 @@ class Predictor:
         )
 
         target_sizes = torch.tensor(
-            [image.size[::-1]]
-        ).to(self.device)
+            [image.size[::-1]],
+            device=self.device
+        )
 
         results = self.processor.post_process_object_detection(
             outputs,
@@ -87,53 +90,70 @@ class Predictor:
     ):
 
         results = self.predict(
-            image_path,
-            threshold
+            image_path=image_path,
+            threshold=threshold
         )
 
         image = cv2.imread(
             image_path
         )
 
-        for score,\
-            label,\
-            box in zip(
+        if image is None:
 
+            raise ValueError(
+                f"Failed to load image: {image_path}"
+            )
+
+        for score, label, box in zip(
             results["scores"],
             results["labels"],
             results["boxes"]
-
         ):
 
-            score = score.item()
+            score = float(
+                score.item()
+            )
 
-            label = label.item()
+            label = int(
+                label.item()
+            )
 
-            xmin,\
-            ymin,\
-            xmax,\
-            ymax = box.tolist()
+            xmin, ymin, xmax, ymax = map(
+                int,
+                box.tolist()
+            )
 
             cv2.rectangle(
                 image,
-                (int(xmin), int(ymin)),
-                (int(xmax), int(ymax)),
-                (0,255,0),
+                (xmin, ymin),
+                (xmax, ymax),
+                (0, 255, 0),
                 2
             )
 
+            class_name = ID_TO_CLASS.get(
+                label,
+                f"class_{label}"
+            )
+
             text = (
-                f"{ID_TO_CLASS[label]} "
+                f"{class_name} "
                 f"{score:.2f}"
             )
 
             cv2.putText(
                 image,
                 text,
-                (int(xmin), int(ymin)-5),
+                (
+                    xmin,
+                    max(
+                        ymin - 5,
+                        15
+                    )
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
-                (0,255,0),
+                (0, 255, 0),
                 2
             )
 
@@ -142,9 +162,17 @@ class Predictor:
             exist_ok=True
         )
 
+        image_name = os.path.basename(
+            image_path
+        )
+
+        file_name, _ = os.path.splitext(
+            image_name
+        )
+
         output_path = os.path.join(
             OUTPUT_DIR,
-            "prediction.jpg"
+            f"{file_name}_prediction.jpg"
         )
 
         cv2.imwrite(
@@ -155,6 +183,8 @@ class Predictor:
         print(
             f"Saved: {output_path}"
         )
+
+        return output_path
 
 
 if __name__ == "__main__":

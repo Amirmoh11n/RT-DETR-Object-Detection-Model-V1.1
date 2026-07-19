@@ -61,15 +61,19 @@ def calculate_iou(
         y2 - y1
     )
 
-    area_a = (
+    area_a = max(
+        0,
         box_a[2] - box_a[0]
-    ) * (
+    ) * max(
+        0,
         box_a[3] - box_a[1]
     )
 
-    area_b = (
+    area_b = max(
+        0,
         box_b[2] - box_b[0]
-    ) * (
+    ) * max(
+        0,
         box_b[3] - box_b[1]
     )
 

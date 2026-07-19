@@ -1,26 +1,35 @@
 import os
+
 import torch
+
 
 def save_checkpoint(
     model,
     optimizer,
+    scaler,
     epoch,
     val_loss,
     path
 ):
 
-    # Ensure directory exists
     directory = os.path.dirname(path)
+
     if directory:
-        os.makedirs(directory, exist_ok=True)
+        os.makedirs(
+            directory,
+            exist_ok=True
+        )
+
+    checkpoint = {
+        "epoch": epoch,
+        "val_loss": val_loss,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "scaler_state_dict": scaler.state_dict()
+    }
 
     torch.save(
-        {
-            "epoch": epoch,
-            "val_loss": val_loss,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict()
-        },
+        checkpoint,
         path
     )
 
@@ -28,12 +37,16 @@ def save_checkpoint(
 def load_checkpoint(
     model,
     optimizer,
+    scaler,
     path,
     device
 ):
 
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Checkpoint not found: {path}")
+
+        raise FileNotFoundError(
+            f"Checkpoint not found: {path}"
+        )
 
     checkpoint = torch.load(
         path,
@@ -48,13 +61,39 @@ def load_checkpoint(
         checkpoint["optimizer_state_dict"]
     )
 
-    return checkpoint["epoch"]
+    if (
+        scaler is not None
+        and "scaler_state_dict" in checkpoint
+    ):
+
+        scaler.load_state_dict(
+            checkpoint["scaler_state_dict"]
+        )
+
+    return {
+        "epoch": checkpoint.get(
+            "epoch",
+            0
+        ),
+        "val_loss": checkpoint.get(
+            "val_loss",
+            float("inf")
+        )
+    }
+
 
 def load_model_weights(
     model,
     path,
     device
 ):
+
+    if not os.path.exists(path):
+
+        raise FileNotFoundError(
+            f"Checkpoint not found: {path}"
+        )
+
     checkpoint = torch.load(
         path,
         map_location=device
@@ -63,3 +102,5 @@ def load_model_weights(
     model.load_state_dict(
         checkpoint["model_state_dict"]
     )
+
+    return model

@@ -8,20 +8,22 @@ class EarlyStopping:
 
         self.patience = patience
 
-        self.best_score = -1
+        self.best_loss = float("inf")
 
         self.counter = 0
+
         self.min_delta = min_delta
 
     def __call__(
         self,
-        score
+        val_loss
     ):
 
-        # Consider an improvement only if it exceeds min_delta
-        if score > (self.best_score + self.min_delta):
+        if val_loss < (
+            self.best_loss - self.min_delta
+        ):
 
-            self.best_score = score
+            self.best_loss = val_loss
 
             self.counter = 0
 

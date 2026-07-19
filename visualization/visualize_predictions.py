@@ -1,11 +1,23 @@
+import os
+
 import cv2
 import torch
+import numpy as np
 
 from PIL import Image
 
-from models.rtdetr_model import load_model
+from configs.config import (
+    CHECKPOINT_PATH
+)
 
-import numpy as np
+from models.rtdetr_model import (
+    load_model
+)
+
+from training.checkpoint import (
+    load_model_weights
+)
+
 
 class PredictionVisualizer:
 
@@ -17,12 +29,28 @@ class PredictionVisualizer:
             self.device
         ) = load_model()
 
+        load_model_weights(
+            self.model,
+            CHECKPOINT_PATH,
+            self.device
+        )
 
+        self.model.eval()
+
+    @torch.no_grad()
     def predict(
         self,
         image_path: str,
         threshold: float = 0.5
     ):
+
+        if not os.path.exists(
+            image_path
+        ):
+
+            raise FileNotFoundError(
+                f"Image not found: {image_path}"
+            )
 
         image = Image.open(
             image_path
@@ -40,11 +68,9 @@ class PredictionVisualizer:
             for k, v in inputs.items()
         }
 
-        with torch.no_grad():
-
-            outputs = self.model(
-                **inputs
-            )
+        outputs = self.model(
+            **inputs
+        )
 
         width, height = image.size
 
@@ -60,7 +86,6 @@ class PredictionVisualizer:
         )[0]
 
         return image, results
-
 
     def draw_predictions(
         self,
@@ -79,26 +104,30 @@ class PredictionVisualizer:
             cv2.COLOR_RGB2BGR
         )
 
-        boxes = results["boxes"]
-        scores = results["scores"]
-        labels = results["labels"]
-
         for box, score, label in zip(
-            boxes,
-            scores,
-            labels
+            results["boxes"],
+            results["scores"],
+            results["labels"]
         ):
 
-            x1, y1, x2, y2 = (
-                box.cpu()
-                .numpy()
-                .astype(int)
+            x1, y1, x2, y2 = map(
+                int,
+                box.cpu().tolist()
+            )
+
+            score = float(
+                score.item()
+            )
+
+            label = int(
+                label.item()
             )
 
             class_name = (
-                self.model.config.id2label[
-                    int(label)
-                ]
+                self.model.config.id2label.get(
+                    label,
+                    f"class_{label}"
+                )
             )
 
             text = (
@@ -117,11 +146,28 @@ class PredictionVisualizer:
             cv2.putText(
                 image,
                 text,
-                (x1, y1 - 10),
+                (
+                    x1,
+                    max(
+                        y1 - 10,
+                        15
+                    )
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
                 (0, 255, 0),
                 2
+            )
+
+        output_dir = os.path.dirname(
+            output_path
+        )
+
+        if output_dir:
+
+            os.makedirs(
+                output_dir,
+                exist_ok=True
             )
 
         cv2.imwrite(
@@ -132,6 +178,9 @@ class PredictionVisualizer:
         print(
             f"Saved: {output_path}"
         )
+
+        return output_path
+
 
 if __name__ == "__main__":
 

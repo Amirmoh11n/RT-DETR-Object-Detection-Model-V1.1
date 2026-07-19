@@ -1,4 +1,5 @@
 import os
+
 import cv2
 import torch
 
@@ -20,12 +21,13 @@ from training.checkpoint import (
     load_model_weights
 )
 
+
 class VideoPredictor:
 
     def __init__(self):
 
-        self.processor,\
-        self.model,\
+        self.processor, \
+        self.model, \
         self.device = load_model()
 
         load_model_weights(
@@ -48,7 +50,9 @@ class VideoPredictor:
             cv2.COLOR_BGR2RGB
         )
 
-        image = Image.fromarray(rgb)
+        image = Image.fromarray(
+            rgb
+        )
 
         inputs = self.processor(
             images=image,
@@ -56,8 +60,8 @@ class VideoPredictor:
         )
 
         inputs = {
-            k: v.to(self.device)
-            for k, v in inputs.items()
+            key: value.to(self.device)
+            for key, value in inputs.items()
         }
 
         outputs = self.model(
@@ -65,8 +69,9 @@ class VideoPredictor:
         )
 
         target_sizes = torch.tensor(
-            [image.size[::-1]]
-        ).to(self.device)
+            [image.size[::-1]],
+            device=self.device
+        )
 
         results = self.processor.post_process_object_detection(
             outputs,
@@ -76,57 +81,66 @@ class VideoPredictor:
 
         return results
 
-
     def draw_boxes(
         self,
         frame,
         results
     ):
 
-        for score,\
-            label,\
-            box in zip(
-
+        for score, label, box in zip(
             results["scores"],
             results["labels"],
             results["boxes"]
-
         ):
 
-            score = score.item()
+            score = float(
+                score.item()
+            )
 
-            label = label.item()
+            label = int(
+                label.item()
+            )
 
-            xmin,\
-            ymin,\
-            xmax,\
-            ymax = box.tolist()
+            xmin, ymin, xmax, ymax = map(
+                int,
+                box.tolist()
+            )
 
             cv2.rectangle(
                 frame,
-                (int(xmin), int(ymin)),
-                (int(xmax), int(ymax)),
-                (0,255,0),
+                (xmin, ymin),
+                (xmax, ymax),
+                (0, 255, 0),
                 2
             )
 
+            class_name = ID_TO_CLASS.get(
+                label,
+                f"class_{label}"
+            )
+
             text = (
-                f"{ID_TO_CLASS[label]}"
-                f" {score:.2f}"
+                f"{class_name} "
+                f"{score:.2f}"
             )
 
             cv2.putText(
                 frame,
                 text,
-                (int(xmin), int(ymin)-5),
+                (
+                    xmin,
+                    max(
+                        ymin - 5,
+                        15
+                    )
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
-                (0,255,0),
+                (0, 255, 0),
                 2
             )
 
         return frame
-
 
     def process_video(
         self,
@@ -135,9 +149,34 @@ class VideoPredictor:
         threshold=0.5
     ):
 
+        if not os.path.exists(
+            input_video
+        ):
+
+            raise FileNotFoundError(
+                f"Video not found: {input_video}"
+            )
+
+        output_dir = os.path.dirname(
+            output_video
+        )
+
+        if output_dir:
+
+            os.makedirs(
+                output_dir,
+                exist_ok=True
+            )
+
         cap = cv2.VideoCapture(
             input_video
         )
+
+        if not cap.isOpened():
+
+            raise ValueError(
+                f"Failed to open video: {input_video}"
+            )
 
         fps = int(
             cap.get(
@@ -157,12 +196,22 @@ class VideoPredictor:
             )
         )
 
+        if fps <= 0:
+            fps = 30
+
         writer = cv2.VideoWriter(
             output_video,
-            cv2.VideoWriter_fourcc(*"mp4v"),
+            cv2.VideoWriter_fourcc(
+                *"mp4v"
+            ),
             fps,
-            (width, height)
+            (
+                width,
+                height
+            )
         )
+
+        frame_count = 0
 
         while True:
 
@@ -181,22 +230,33 @@ class VideoPredictor:
                 results
             )
 
-            writer.write(frame)
+            writer.write(
+                frame
+            )
+
+            frame_count += 1
 
         cap.release()
 
         writer.release()
 
         print(
+            f"Processed {frame_count} frames"
+        )
+
+        print(
             f"Saved: {output_video}"
         )
+
+        return output_video
+
 
 if __name__ == "__main__":
 
     predictor = VideoPredictor()
 
     predictor.process_video(
-        "traffic.mp4",
-        "outputs/videos/result.mp4",
+        input_video="traffic.mp4",
+        output_video="outputs/videos/result.mp4",
         threshold=0.5
     )
