@@ -15,8 +15,6 @@ def train_one_epoch(
 
     running_loss = 0.0
 
-    valid_batches = 0
-
     progress_bar = tqdm(
         train_loader,
         desc="Training",
@@ -32,9 +30,9 @@ def train_one_epoch(
         labels = [
             {
                 k: v.to(device)
-                for k, v in t.items()
+                for k, v in target.items()
             }
-            for t in batch["labels"]
+            for target in batch["labels"]
         ]
 
         optimizer.zero_grad()
@@ -69,11 +67,9 @@ def train_one_epoch(
 
         scaler.step(optimizer)
 
-        scaler.update()     
+        scaler.update()
 
         running_loss += loss.item()
-
-        valid_batches += 1
 
         progress_bar.set_postfix(
             loss=f"{loss.item():.4f}"
@@ -82,9 +78,7 @@ def train_one_epoch(
     epoch_loss = (
         running_loss
         /
-        max(valid_batches, 1)
+        len(train_loader)
     )
 
-    return {
-        "loss": epoch_loss
-    }
+    return epoch_loss
