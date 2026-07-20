@@ -65,6 +65,4 @@ def validate(
         max(valid_batches, 1)
     )
 
-    return {
-        "loss": val_loss
-    }
+    return val_loss
