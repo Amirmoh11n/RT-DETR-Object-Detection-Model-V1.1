@@ -38,3 +38,9 @@ DATASET_ROOT = "./VOC"
 CHECKPOINT_PATH = "./checkpoints/best_model.pth"
 
 OUTPUT_DIR = "./outputs"
+
+CHECKPOINT_DIR = "checkpoints"
+
+BEST_MODEL_PATH = f"{CHECKPOINT_DIR}/best_model.pth"
+
+LAST_MODEL_PATH = f"{CHECKPOINT_DIR}/last_model.pth"

@@ -141,6 +141,7 @@ def main():
             save_checkpoint(
                 model,
                 optimizer,
+                scaler,
                 epoch,
                 val_loss,
                 "checkpoints/best_model.pth"
@@ -159,12 +160,13 @@ def main():
             )
 
             break
-    
+
     load_checkpoint(
-    model,
-    optimizer,
-    "checkpoints/best_model.pth",
-    device
+        model,
+        optimizer,
+        scaler,
+        "checkpoints/best_model.pth",
+        device
     )
     test_loss = test_model(
         model,

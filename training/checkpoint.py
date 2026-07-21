@@ -1,5 +1,4 @@
 import os
-
 import torch
 
 
@@ -33,6 +32,10 @@ def save_checkpoint(
         path
     )
 
+    print(
+        f"Checkpoint saved: {path}"
+    )
+
 
 def load_checkpoint(
     model,
@@ -63,22 +66,21 @@ def load_checkpoint(
 
     if (
         scaler is not None
-        and "scaler_state_dict" in checkpoint
+        and
+        "scaler_state_dict" in checkpoint
     ):
 
         scaler.load_state_dict(
             checkpoint["scaler_state_dict"]
         )
 
+    print(
+        f"Checkpoint loaded: {path}"
+    )
+
     return {
-        "epoch": checkpoint.get(
-            "epoch",
-            0
-        ),
-        "val_loss": checkpoint.get(
-            "val_loss",
-            float("inf")
-        )
+        "epoch": checkpoint["epoch"],
+        "val_loss": checkpoint["val_loss"]
     }
 
 
@@ -101,6 +103,10 @@ def load_model_weights(
 
     model.load_state_dict(
         checkpoint["model_state_dict"]
+    )
+
+    print(
+        f"Model weights loaded: {path}"
     )
 
     return model
