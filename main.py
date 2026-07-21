@@ -11,9 +11,7 @@ from configs.config import (
     MIN_DELTA
 )
 
-from training.metrics import (
-    evaluate_map
-)
+from evaluation.evaluate import evaluate
 
 from data.dataset import (
     get_datasets,
@@ -44,34 +42,38 @@ from training.checkpoint import (
     save_checkpoint
 )
 
+
 train_history = []
 val_history = []
 
+
 def main():
 
-    processor,\
-    model,\
-    device = load_model()
+    processor, model, device = load_model()
 
-    train_dataset,\
-    val_dataset,\
+
+    train_dataset, \
+    val_dataset, \
     test_dataset = get_datasets(
         processor
     )
 
-    train_loader,\
-    val_loader,\
+
+    train_loader, \
+    val_loader, \
     test_loader = get_dataloaders(
         train_dataset,
         val_dataset,
         test_dataset
     )
 
+
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=LEARNING_RATE
     )
-    
+
+
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         mode="min",
@@ -79,20 +81,29 @@ def main():
         patience=2
     )
 
+
     scaler = GradScaler()
+
 
     early_stopping = EarlyStopping(
         patience=PATIENCE,
         min_delta=MIN_DELTA
     )
 
+
     best_val_loss = float("inf")
+
 
     for epoch in range(EPOCHS):
 
         print(
             f"\nEpoch {epoch + 1}/{EPOCHS}"
         )
+
+
+        # -----------------
+        # Training
+        # -----------------
 
         train_loss = train_one_epoch(
             model,
@@ -102,11 +113,17 @@ def main():
             scaler
         )
 
+
+        # -----------------
+        # Validation Loss
+        # -----------------
+
         val_loss = validate(
             model,
             val_loader,
             device
         )
+
 
         train_history.append(
             train_loss
@@ -115,16 +132,24 @@ def main():
         val_history.append(
             val_loss
         )
+
+
         scheduler.step(
             val_loss
         )
-        
-        val_metrics = evaluate_map(
+
+
+        # -----------------
+        # Detection Metrics
+        # -----------------
+
+        val_metrics = evaluate(
             model,
             val_loader,
             processor,
             device
         )
+
 
         print(
             f"Train Loss: {train_loss:.4f}"
@@ -133,6 +158,21 @@ def main():
         print(
             f"Val Loss: {val_loss:.4f}"
         )
+
+
+        print(
+            f"""
+mAP:     {val_metrics['map']:.4f}
+mAP50:   {val_metrics['map50']:.4f}
+mAP75:   {val_metrics['map75']:.4f}
+mAR100:  {val_metrics['mar100']:.4f}
+"""
+        )
+
+
+        # -----------------
+        # Save Best Model
+        # -----------------
 
         if val_loss < best_val_loss:
 
@@ -144,16 +184,19 @@ def main():
                 scaler,
                 epoch,
                 val_loss,
-                "checkpoints/best_model.pth"
+                "checkpoints/best_model.pth",
+                scheduler=scheduler,
+                metrics=val_metrics
             )
 
             print(
                 "Best model saved."
             )
 
-        if early_stopping(
-                val_metrics["map50"]
-        ):
+
+        # Early stopping based on validation loss
+
+        if early_stopping(val_loss):
 
             print(
                 "Early stopping triggered."
@@ -161,18 +204,32 @@ def main():
 
             break
 
+
+
+    # -----------------
+    # Load Best Model
+    # -----------------
+
     load_checkpoint(
         model,
         optimizer,
         scaler,
+        scheduler,
         "checkpoints/best_model.pth",
         device
     )
+
+
+    # -----------------
+    # Final Test
+    # -----------------
+
     test_loss = test_model(
         model,
         test_loader,
         device
     )
+
 
     print(
         f"\nTest Loss: {test_loss:.4f}"

@@ -1,68 +1,28 @@
-import torch
-
-from tqdm import tqdm
+from .metrics import evaluate_map
 
 
-@torch.no_grad()
-def validate(
+def evaluate(
     model,
-    val_loader,
+    dataloader,
+    processor,
     device
 ):
+    """
+    Run full evaluation pipeline.
 
-    model.eval()
+    Returns:
+        dict:
+            map
+            map50
+            map75
+            mar100
+    """
 
-    running_loss = 0.0
-
-    valid_batches = 0
-
-    progress_bar = tqdm(
-        val_loader,
-        desc="Validation",
-        leave=False
+    metrics = evaluate_map(
+        model=model,
+        dataloader=dataloader,
+        processor=processor,
+        device=device
     )
 
-    for batch in progress_bar:
-
-        pixel_values = batch[
-            "pixel_values"
-        ].to(device)
-
-        labels = [
-            {
-                k: v.to(device)
-                for k, v in t.items()
-            }
-            for t in batch["labels"]
-        ]
-
-        outputs = model(
-            pixel_values=pixel_values,
-            labels=labels
-        )
-
-        loss = outputs.loss
-
-        if not torch.isfinite(loss):
-
-            print(
-                f"Invalid validation loss detected: {loss}"
-            )
-
-            continue
-
-        running_loss += loss.item()
-
-        valid_batches += 1
-
-        progress_bar.set_postfix(
-            loss=f"{loss.item():.4f}"
-        )
-
-    val_loss = (
-        running_loss
-        /
-        max(valid_batches, 1)
-    )
-
-    return val_loss
+    return metrics
