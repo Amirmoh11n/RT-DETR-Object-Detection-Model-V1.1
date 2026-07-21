@@ -152,7 +152,7 @@ def main():
             )
 
         if early_stopping(
-            val_metrics.map50
+                val_metrics["map50"]
         ):
 
             print(
