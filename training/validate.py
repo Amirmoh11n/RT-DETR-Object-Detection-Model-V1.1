@@ -37,8 +37,7 @@ def validate(
         ]
 
         outputs = model(
-            pixel_values=pixel_values,
-            labels=labels
+            pixel_values=pixel_values
         )
 
         loss = outputs.loss
