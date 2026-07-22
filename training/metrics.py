@@ -17,9 +17,7 @@ def evaluate_map(
 
     model.eval()
 
-    metric = MeanAveragePrecision(
-        max_detection_thresholds=[1, 10, 300]
-    )
+    metric = MeanAveragePrecision()
 
 
     for batch in dataloader:
