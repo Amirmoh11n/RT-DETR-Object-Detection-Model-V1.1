@@ -95,7 +95,6 @@ def evaluate_map(
 
     results = metric.compute()
 
-
     return {
         "map":
             results["map"].item(),
@@ -106,6 +105,6 @@ def evaluate_map(
         "map75":
             results["map_75"].item(),
 
-        "mar100":
-            results["mar_100"].item()
+        "mar300":
+            results["mar_300"].item()
     }

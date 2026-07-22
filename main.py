@@ -159,14 +159,13 @@ def main():
             f"Val Loss: {val_loss:.4f}"
         )
 
-
         print(
             f"""
-mAP:     {val_metrics['map']:.4f}
-mAP50:   {val_metrics['map50']:.4f}
-mAP75:   {val_metrics['map75']:.4f}
-mAR100:  {val_metrics['mar100']:.4f}
-"""
+        mAP:     {val_metrics['map']:.4f}
+        mAP50:   {val_metrics['map50']:.4f}
+        mAP75:   {val_metrics['map75']:.4f}
+        mAR300:  {val_metrics['mar300']:.4f}
+        """
         )
 
 
