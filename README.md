@@ -47,9 +47,9 @@ After the initial download, cached files are reused and no additional downloads 
 ## Installation
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/Amirmoh11n/RT-DETR-Object-Detection-Model-V1.1
 
-cd RTDETR-Model-v1.1
+cd RT-DETR-Object-Detection-Model-V1.1
 
 pip install -r requirements.txt
 ```
