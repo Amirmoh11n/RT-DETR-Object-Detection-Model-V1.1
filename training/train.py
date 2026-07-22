@@ -37,8 +37,9 @@ def train_one_epoch(
 
         optimizer.zero_grad()
 
-        with torch.cuda.amp.autocast(
-            enabled=device.type == "cuda"
+        with torch.amp.autocast(
+                "cuda",
+                enabled=device.type == "cuda"
         ):
 
             outputs = model(

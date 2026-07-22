@@ -1,7 +1,5 @@
 import torch
 
-from torch.cuda.amp import GradScaler
-
 from training.checkpoint import load_checkpoint
 
 from configs.config import (
@@ -81,8 +79,10 @@ def main():
         patience=2
     )
 
-
-    scaler = GradScaler()
+    scaler = torch.amp.GradScaler(
+        "cuda",
+        enabled=device.type == "cuda"
+    )
 
 
     early_stopping = EarlyStopping(
@@ -196,7 +196,7 @@ mAR100:  {val_metrics['mar100']:.4f}
 
         # Early stopping based on validation loss
 
-        if early_stopping(val_loss):
+        if early_stopping(val_metrics["map50"]):
 
             print(
                 "Early stopping triggered."
