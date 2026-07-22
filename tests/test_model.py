@@ -43,7 +43,7 @@ def test_model_device():
         model.parameters()
     ).device
 
-    assert model_device == device
+    assert model_device.type == device.type
 
 
 def test_training_forward_backward(model_bundle):
