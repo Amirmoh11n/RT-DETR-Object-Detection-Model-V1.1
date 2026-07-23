@@ -49,7 +49,7 @@ def evaluate_map(
         predictions = processor.post_process_object_detection(
             outputs,
             target_sizes=target_sizes,
-            threshold=0.05
+            threshold=0.01
         )
 
 
