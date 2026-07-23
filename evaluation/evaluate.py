@@ -24,5 +24,5 @@ def evaluate(
         "map": metrics["map"],
         "map50": metrics["map_50"],
         "map75": metrics["map_75"],
-        "mar300": metrics["mar_100"]
+        "mar300": metrics["mar_300"]
     }
