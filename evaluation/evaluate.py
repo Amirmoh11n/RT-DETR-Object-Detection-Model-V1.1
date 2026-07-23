@@ -19,5 +19,10 @@ def evaluate(
         processor=processor,
         device=device
     )
-
-    return metrics
+    print(metrics.keys())
+    return {
+        "map": metrics["map"],
+        "map50": metrics["map_50"],
+        "map75": metrics["map_75"],
+        "mar300": metrics["mar_100"]
+    }
