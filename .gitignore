@@ -1,0 +1,79 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+
+venv/
+.venv/
+env/
+ENV/
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Pytest
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+
+.vscode/
+.idea/
+
+# Operating System
+
+.DS_Store
+Thumbs.db
+
+# Dataset
+
+datasets/
+
+# Outputs
+
+outputs/
+results/
+
+# Logs
+
+logs/
+*.log
+
+# TensorBoard
+
+runs/
+
+# Weights & Biases
+
+wandb/
+
+# Temporary Files
+
+tmp/
+temp/
+
+# Model Exports
+
+*.onnx
+*.engine
+*.trt
+
+# Colab
+
+content/
+
+# Environment Variables
+
+.env
+
+# Build
+
+dist/
+build/
+*.egg-info/
