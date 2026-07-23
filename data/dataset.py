@@ -25,8 +25,8 @@ from configs.config import (
 )
 
 
-VOC_ROOT = "./datasets/VOCtrainval_11-May-2012"
-
+#VOC_ROOT = "./datasets/VOCtrainval_11-May-2012"
+VOC_ROOT = "/kaggle/input/notebooks/kerneler/starter-voctrainval-11-may-2012-147bd2bd-c"
 
 class VOCRTDETRDataset(Dataset):
 
