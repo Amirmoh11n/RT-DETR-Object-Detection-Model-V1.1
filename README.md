@@ -1,51 +1,180 @@
-# RT-DETR Pascal VOC Object Detection
+# RTDETR-Model-v1.1
 
-A modular object detection project built with **PyTorch**, **Transformers**, and **RT-DETR (Real-Time Detection Transformer)**.
-
-The project focuses on fine-tuning an open-source Vision Transformer-based object detector on the **Pascal VOC 2012** dataset and building a complete training and inference pipeline using modern deep learning practices.
+A complete Object Detection pipeline built with RT-DETR and Pascal VOC 2012 using PyTorch and Hugging Face Transformers.
 
 ---
 
 ## Features
 
-- RT-DETR object detection model
-- Fine-tuning on Pascal VOC 2012
-- Multi-class object detection (20 VOC classes)
-- Modular project structure
-- Train / Validation / Test split
-- Global dataset shuffling
-- Mixed Precision Training (AMP)
-- Early Stopping
-- Model Checkpointing
-- mAP Evaluation
-- Image Inference Pipeline
+* RT-DETR (Real-Time Detection Transformer)
+* Pascal VOC 2012 Dataset Support
+* Automatic Dataset Download & Caching
+* Train / Validation / Test Split
+* Mixed Precision Training (AMP)
+* Gradient Clipping
+* Learning Rate Scheduler
+* Early Stopping
+* Checkpoint Saving & Loading
+* Resume Training Support
+* mAP Evaluation
+* Precision / Recall / F1 Metrics
+* Image Inference
+* Video Inference
+* Prediction Visualization
+* Unit Tests
 
 ---
 
-## Tech Stack
+## Dataset
 
-- Python
-- PyTorch
-- Hugging Face Transformers
-- OpenCV
-- TorchMetrics
-- Pascal VOC 2012
+This project uses Pascal VOC 2012.
+
+Dataset structure:
+
+```text
+datasets/
+└── VOC/
+    └── VOCdevkit/
+        └── VOC2012/
+```
+
+The dataset is downloaded automatically on the first execution.
+
+After the initial download, cached files are reused and no additional downloads are required.
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/Amirmoh11n/RT-DETR-Object-Detection-Model-V1.1
+
+cd RT-DETR-Object-Detection-Model-V1.1
+
+pip install -r requirements.txt
+```
+
+---
+
+## Training
+
+Start training:
+
+```bash
+python main.py
+```
+
+Training includes:
+
+* Training Loss
+* Validation Loss
+* mAP
+* mAP50
+* mAP75
+* mAR300
+* Learning Rate Scheduling
+* Early Stopping
+* Best Model Saving
+
+---
+
+## Checkpoints
+
+Best checkpoint location:
+
+```text
+checkpoints/
+└── best_model.pth
+```
+
+Stored information:
+
+* Model Weights
+* Optimizer State
+* Scheduler State
+* AMP Scaler State
+* Epoch Number
+* Validation Loss
+* Validation Metrics
+
+Checkpoints are compatible with:
+
+* Linux
+* Windows
+* Google Colab
+
+---
+
+## Evaluation
+
+Run evaluation:
+
+```bash
+python -m evaluation.evaluate
+```
+
+Reported metrics:
+
+* mAP
+* mAP50
+* mAP75
+* mAR300
+* Precision
+* Recall
+* F1 Score
+* IoU
+
+---
+
+## Image Inference
+
+```bash
+python inference/predict_image.py
+```
+
+Output:
+
+```text
+outputs/
+└── prediction.jpg
+```
+
+---
+
+## Video Inference
+
+```bash
+python inference/predict_video.py
+```
+
+Output:
+
+```text
+outputs/
+└── videos/
+    └── result.mp4
+```
 
 ---
 
 ## Project Structure
 
 ```text
-RTDETR-VOC-Object-Detection/
+RTDETR-Model-v1.1/
 │
 ├── configs/
 ├── data/
+├── evaluation/
+├── inference/
 ├── models/
 ├── training/
-├── inference/
+├── visualization/
+├── tests/
+│
+├── datasets/
 ├── checkpoints/
 ├── outputs/
-├── tests/
+│
 ├── main.py
 ├── requirements.txt
 └── README.md
@@ -53,109 +182,73 @@ RTDETR-VOC-Object-Detection/
 
 ---
 
-## Model
+## Testing
 
-**RT-DETR (Real-Time Detection Transformer)**
+Run all tests:
 
-RT-DETR combines Transformer-based object detection with real-time inference capabilities, providing strong detection performance while maintaining efficient execution.
+```bash
+pytest
+```
 
-Base model:
+Run specific test modules:
 
-```text
-PekingU/rtdetr_r50vd
+```bash
+pytest tests/test_model.py
+
+pytest tests/test_dataset.py
+
+pytest tests/test_inference.py
 ```
 
 ---
 
-## Dataset
+## Environment
 
-**Pascal VOC 2012**
+Tested with:
 
-The model is fine-tuned on the Pascal VOC dataset containing 20 object categories:
-
-- Person
-- Car
-- Bus
-- Bicycle
-- Dog
-- Cat
-- Train
-- Horse
-- Boat
-- And other VOC classes
+* Python 3.12
+* PyTorch 2.x
+* CUDA 12.x
+* Hugging Face Transformers
+* Google Colab
+* Linux
+* Windows
 
 ---
 
-## Training Pipeline
+## Current Version
 
-```text
-Dataset
-   ↓
-Global Shuffle
-   ↓
-Train / Validation / Test Split
-   ↓
-RT-DETR Fine-Tuning
-   ↓
-Validation
-   ↓
-Early Stopping
-   ↓
-Best Checkpoint
-   ↓
-Test Evaluation
-```
+### v1.1
+
+Implemented:
+
+* Dataset Pipeline
+* Training Pipeline
+* Validation Pipeline
+* Evaluation Pipeline
+* Image Inference
+* Video Inference
+* Visualization Tools
+* Checkpoint System
+* Automatic Dataset Caching
 
 ---
 
-## Evaluation
+## Future Roadmap
 
-The project evaluates performance using:
+Planned improvements:
 
-- Validation Loss
-- Mean Average Precision (mAP)
-- mAP@50
-- mAP@50:95
-
----
-
-## Inference
-
-The trained model can perform object detection on custom images and generate visual outputs with bounding boxes and confidence scores.
-
-Example workflow:
-
-```text
-Input Image
-      ↓
-RT-DETR
-      ↓
-Object Detection
-      ↓
-Output Image
-```
+* TensorBoard Integration
+* Weights & Biases Integration
+* ONNX Export
+* TensorRT Export
+* Docker Support
+* Multi-GPU Training
+* Hyperparameter Search
+* COCO Dataset Support
 
 ---
 
-## Future Improvements
+## License
 
-- Video Object Detection
-- Webcam Inference
-- Traffic Camera Analysis
-- ONNX Export
-- TensorRT Optimization
-- Streamlit Demo
-
----
-
-## Results
-
-Training metrics, checkpoints, prediction samples, and evaluation results will be stored in the `outputs/` directory.
-
----
-
-## Author
-
-AmirMohammad Nashalji
-
-Object Detection and Computer Vision Project built with PyTorch and RT-DETR.
+MIT License
