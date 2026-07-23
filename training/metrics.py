@@ -126,12 +126,6 @@ def evaluate_map(
 
     results = metric.compute()
 
-    #clean
-    print(results.keys())
-
-    print(results["classes"])
-    print(results["map_per_class"])
-
 
     return {
         "mAP": results["map"],
