@@ -17,8 +17,9 @@ def evaluate_map(
 
     model.eval()
 
-    metric = MeanAveragePrecision(max_detection_thresholds=[1,10,300])
-
+    metric = MeanAveragePrecision(
+        max_detection_thresholds=[1, 10, 300]
+    )
 
     for batch in dataloader:
 
@@ -26,17 +27,12 @@ def evaluate_map(
             "pixel_values"
         ].to(device)
 
-
         labels = batch["labels"]
 
-
-        # Inference only
         outputs = model(
             pixel_values=pixel_values
         )
 
-
-        # Original image sizes
         target_sizes = torch.stack(
             [
                 t["orig_size"]
@@ -44,33 +40,43 @@ def evaluate_map(
             ]
         ).to(device)
 
-
-        # Convert model outputs to xyxy pixel coordinates
-        predictions = processor.post_process_object_detection(
-            outputs,
-            target_sizes=target_sizes,
-            threshold=0.01
+        predictions = (
+            processor.post_process_object_detection(
+                outputs,
+                target_sizes=target_sizes,
+                threshold=0.01
+            )
         )
-
 
         preds = []
         targets = []
-
 
         for pred, target in zip(
             predictions,
             labels
         ):
 
-
             # -----------------------------
             # Predictions
             # -----------------------------
 
-            pred_boxes = pred["boxes"].cpu()
-            pred_scores = pred["scores"].cpu()
-            pred_labels = pred["labels"].cpu()
+            pred_boxes = (
+                pred["boxes"]
+                .detach()
+                .cpu()
+            )
 
+            pred_scores = (
+                pred["scores"]
+                .detach()
+                .cpu()
+            )
+
+            pred_labels = (
+                pred["labels"]
+                .detach()
+                .cpu()
+            )
 
             preds.append(
                 {
@@ -80,19 +86,15 @@ def evaluate_map(
                 }
             )
 
-
             # -----------------------------
             # Ground Truth
             # -----------------------------
 
-            gt_boxes = target["boxes"].clone()
-
-
-            # RT-DETR boxes:
-            # cx,cy,w,h  (normalized)
-            #
-            # TorchMetrics needs:
-            # xmin,ymin,xmax,ymax (pixels)
+            gt_boxes = (
+                target["boxes"]
+                .clone()
+                .cpu()
+            )
 
             gt_boxes = box_convert(
                 gt_boxes,
@@ -100,36 +102,45 @@ def evaluate_map(
                 out_fmt="xyxy"
             )
 
-
-            # Convert normalized coordinates to pixels
-
             image_height, image_width = (
                 target["orig_size"]
                 .cpu()
                 .tolist()
             )
 
-
             gt_boxes[:, [0, 2]] *= image_width
-
             gt_boxes[:, [1, 3]] *= image_height
-
 
             targets.append(
                 {
-                    "boxes": gt_boxes.cpu(),
-                    "labels":
-                        target["class_labels"].cpu()
+                    "boxes": gt_boxes,
+                    "labels": (
+                        target["class_labels"]
+                        .cpu()
+                    )
                 }
             )
 
+        # بسیار مهم
+        metric.update(
+            preds,
+            targets
+        )
 
     results = metric.compute()
 
+    print(
+        "Metric keys:",
+        results.keys()
+    )
 
     return {
-        "mAP": results["map"],
-        "mAP50": results["map_50"],
-        "mAP75": results["map_75"],
-        "mAR300": results["mar_300"]
+        "mAP": results["map"].item(),
+        "mAP50": results["map_50"].item(),
+        "mAP75": results["map_75"].item(),
+        "mAR300": (
+            results["mar_300"].item()
+            if "mar_300" in results
+            else results["mar_100"].item()
+        )
     }
