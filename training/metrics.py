@@ -17,7 +17,7 @@ def evaluate_map(
 
     model.eval()
 
-    metric = MeanAveragePrecision(box_format="xyxy",max_detection_thresholds=[1,10,100])
+    metric = MeanAveragePrecision(box_format="xyxy",iou_type="bbox",max_detection_thresholds=[1,10,100])
 
 
     for batch in dataloader:
@@ -123,6 +123,15 @@ def evaluate_map(
                 }
             )
 
+        #clean
+        print("PRED BOX")
+        print(preds[0]["boxes"][:3])
+
+        print("GT BOX")
+        print(targets[0]["boxes"][:3])
+
+        print("LABELS")
+        print(targets[0]["labels"][:10])
 
         metric.update(
             preds,
@@ -132,19 +141,16 @@ def evaluate_map(
 
     results = metric.compute()
 
+    #clean
+    print(results.keys())
+
+    print(results["classes"])
+    print(results["map_per_class"])
+
 
     return {
-
-        "map":
-            results["map"].item(),
-
-        "map50":
-            results["map_50"].item(),
-
-        "map75":
-            results["map_75"].item(),
-
-        "mar300":
-            results["mar_300"].item()
-
+        "mAP": results["map"],
+        "mAP50": results["map_50"],
+        "mAP75": results["map_75"],
+        "mAR100": results["mar_100"]
     }
