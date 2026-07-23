@@ -25,7 +25,7 @@ from configs.config import (
 )
 
 
-VOC_ROOT = "./datasets/VOCtrainval_11-May-2012/VOCdevkit/VOC2012"
+VOC_ROOT = "./datasets/VOCtrainval_11-May-2012.tar"
 
 
 class VOCRTDETRDataset(Dataset):
