@@ -156,9 +156,6 @@ outputs/
 ```
 
 ---
----
-
----
 
 ## Results
 
@@ -167,8 +164,6 @@ outputs/
 <p align="center">
   <img src="inference_output/test_image_prediction.png" width="80%">
 </p>
-
-Example output from the fine-tuned RT-DETR model:
 
 ### 🎥 Video Prediction Demo
 
