@@ -175,13 +175,7 @@ Example output from the fine-tuned RT-DETR model:
 
 Example video inference result:
 
-<p align="center">
-  <a href="https://www.youtube.com/shorts/odJPaTqFDpo">
-    <img src="https://img.youtube.com/vi/odJPaTqFDpo/0.jpg" width="80%">
-  </a>
-</p>
-
-Click the image above to watch the full video demo on YouTube.
+https://github.com/user-attachments/assets/6f097419-fdab-4581-beb5-e7fcdf510e4c
 
 ---
 
