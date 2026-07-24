@@ -175,12 +175,9 @@ Example output from the fine-tuned RT-DETR model:
 
 ## 🎥 Video Demo
 
-<video src="[https://github.com/user-attachments/assets/xxxxxxxx](https://github.com/user-attachments/assets/6f097419-fdab-4581-beb5-e7fcdf510e4c
-)" controls="controls" width="800">
-
-https://github.com/user-attachments/assets/6f097419-fdab-4581-beb5-e7fcdf510e4c
-
+<video src="[VIDEO_URL](https://github.com/user-attachments/assets/6f097419-fdab-4581-beb5-e7fcdf510e4c)" autoplay loop muted playsinline width="800">
 </video>
+
 ---
 
 ## Project Structure
