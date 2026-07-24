@@ -176,6 +176,10 @@ Example output from the fine-tuned RT-DETR model:
 <video src="https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96" width="800">
 </video>
 
+<p align="center">
+  <img src="[assets/demo.gif](https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96)" width="80%">
+</p>
+
 ---
 
 ## Project Structure
