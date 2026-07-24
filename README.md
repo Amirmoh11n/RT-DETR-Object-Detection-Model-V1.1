@@ -173,9 +173,7 @@ Example output from the fine-tuned RT-DETR model:
 
 ### 🎥 Video Prediction Demo
 
-## 🎥 Video Demo
-
-<video src="https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96" autoplay loop muted playsinline width="800">
+<video src="https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96" width="800">
 </video>
 
 ---
