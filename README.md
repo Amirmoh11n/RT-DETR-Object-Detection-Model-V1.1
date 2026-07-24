@@ -158,6 +158,8 @@ outputs/
 ---
 ---
 
+---
+
 ## Results
 
 ### 📸 Image Prediction
@@ -174,14 +176,13 @@ Example output from the fine-tuned RT-DETR model:
 Example video inference result:
 
 <p align="center">
-  <img src="[inference_output/result_fixed.mp4](https://www.youtube.com/shorts/odJPaTqFDpo)" width="80%">
+  <a href="https://www.youtube.com/shorts/odJPaTqFDpo">
+    <img src="https://img.youtube.com/vi/odJPaTqFDpo/0.jpg" width="80%">
+  </a>
 </p>
 
-The full video result is available here:
+Click the image above to watch the full video demo on YouTube.
 
-[result_fixed.mp4](assets/videos/result_fixed.mp4)
-
----
 ---
 
 ## Project Structure
