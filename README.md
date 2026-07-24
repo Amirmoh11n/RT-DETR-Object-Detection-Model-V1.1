@@ -164,16 +164,16 @@ outputs/
 
 ### 📸 Image Prediction
 
+<p align="center">
+  <img src="inference_output/test_image_prediction.png" width="80%">
+</p>
+
 Example output from the fine-tuned RT-DETR model:
 
 ### 🎥 Video Prediction Demo
 
 <video src="https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96" width="800">
 </video>
-
-<p align="center">
-  <img src="[assets/demo.gif](https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96)" width="80%">
-</p>
 
 ---
 
