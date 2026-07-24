@@ -2,6 +2,7 @@
 
 A complete Object Detection pipeline built with RT-DETR and Pascal VOC 2012 using PyTorch and Hugging Face Transformers.
 
+
 ---
 
 
@@ -18,7 +19,6 @@ A complete Object Detection pipeline built with RT-DETR and Pascal VOC 2012 usin
 <video src="https://github.com/user-attachments/assets/2c5adc67-2a1f-444c-9a99-2ffaa4d60b96" width="800">
 </video>
 
----
 
 ---
 
